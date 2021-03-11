@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebAPI.Models
 {
-    public class DatabaseConnection
+    public class DatabaseConnectionModel
     {
         public static string Server { get; set; }
         public static string Database { get; set; }

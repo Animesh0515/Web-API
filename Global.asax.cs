@@ -15,10 +15,10 @@ namespace WebAPI
     {
         protected void Application_Start()
         {
-            DatabaseConnection.Server = System.Configuration.ConfigurationManager.AppSettings["Server"];
-            DatabaseConnection.Database = System.Configuration.ConfigurationManager.AppSettings["Database"];
-            DatabaseConnection.Username = System.Configuration.ConfigurationManager.AppSettings["Username"];
-            DatabaseConnection.Password = System.Configuration.ConfigurationManager.AppSettings["Password"];
+            DatabaseConnectionModel.Server = System.Configuration.ConfigurationManager.AppSettings["Server"];
+            DatabaseConnectionModel.Database = System.Configuration.ConfigurationManager.AppSettings["Database"];
+            DatabaseConnectionModel.Username = System.Configuration.ConfigurationManager.AppSettings["Username"];
+            DatabaseConnectionModel.Password = System.Configuration.ConfigurationManager.AppSettings["Password"];
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
