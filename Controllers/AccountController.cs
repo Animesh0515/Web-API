@@ -17,7 +17,7 @@ namespace WebAPI.Controllers
     public class AccountController : ApiController
     {
         Utility utility = new Utility();
-        static int User_Id;
+        //public static int User_Id;
 
 
         [Route("api/Account/login")]
@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
 
                 if (loginRequest != null)
                 {
-                    User_Id= loginRequest.User_ID;
+                    WebApiApplication.User_Id= loginRequest.User_ID;
                     validatedLogin.validate = true;
                     //bool Result = validatedLogin.validate;
                     //return Request.CreateResponse(HttpStatusCode.OK, validatedLogin.validate);
@@ -101,7 +101,7 @@ namespace WebAPI.Controllers
         [HttpGet]
         public string GetUserDetails()
         {
-            UserResponseModel userResponse=utility.GetUserDetails(User_Id);
+            UserResponseModel userResponse=utility.GetUserDetails(WebApiApplication.User_Id);
             if(userResponse != null)
             {
                 return JsonConvert.SerializeObject(userResponse);

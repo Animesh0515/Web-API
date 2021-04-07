@@ -16,5 +16,12 @@ namespace WebAPI.Models
         {
             public int Status { get; set; }
         }
+
+        public class BookingResponse
+            {
+            public bool booked { get; set; }
+        }
+
+        
     }
 }

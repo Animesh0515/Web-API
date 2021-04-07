@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using WebAPI.Models;
 
 namespace WebAPI
@@ -12,6 +9,8 @@ namespace WebAPI
     public class Utility
     {
         string connectionstring = DatabaseConnectionModel.SqlConnection();
+        static DateTime dateTime = DateTime.Now;
+        string bookedDate = dateTime.ToString("yyyy-MM-dd");
 
         public List<LoginRequestModel> login()
         {
@@ -20,7 +19,7 @@ namespace WebAPI
             MySqlConnection conn = new MySqlConnection(connectionstring);
             MySqlCommand query = conn.CreateCommand();
             query.CommandText = "Select * from users;";
-            
+
             //string query = "Select * from users;";
             //MySqlCommand cmd = new MySqlCommand(query, conn);
 
@@ -49,7 +48,7 @@ namespace WebAPI
 
         }
 
-        public int Signup (UserModel users)
+        public int Signup(UserModel users)
         {
             //string dateString = String.Format("{0:dd/MM/yyyy}", users.DateOfBirth);
             int Status;
@@ -68,7 +67,7 @@ namespace WebAPI
                     Insertcmd.ExecuteNonQuery();
                     Status = 1;
                     conn.Close();
-                     return Status;
+                    return Status;
 
                 }
                 else
@@ -77,7 +76,7 @@ namespace WebAPI
                     conn.Close();
                     return Status;
                 }
-                
+
 
             }
             catch (Exception e)
@@ -96,24 +95,214 @@ namespace WebAPI
             MySqlCommand cmd = new MySqlCommand(User_Query, conn);
             //MySqlCommand User_Query = conn.CreateCommand();
             //User_Query.CommandText = "Select * from users where User_Id='" + Id + "';";
-            conn.Open();
-            MySqlDataReader QueryResult =cmd.ExecuteReader();
-            while(QueryResult.Read())
+            try
             {
-                userResponse.First_Name = QueryResult["First_Name"].ToString();
-                userResponse.Last_Name = QueryResult["Last_Name"].ToString();
-                userResponse.Email = QueryResult["Email"].ToString();
-                userResponse.Phone_Number = Convert.ToInt32(QueryResult["Phone_Number"]);
-                userResponse.DateOfBirth = DateTime.Parse(QueryResult["DateOfBirth"].ToString());
-                userResponse.Gender = QueryResult["Gender"].ToString();
-                userResponse.Age = Convert.ToInt32(QueryResult["Age"]);
-                userResponse.JoinedDate = DateTime.Parse(QueryResult["JoinedDate"].ToString());
+                conn.Open();
+                MySqlDataReader QueryResult = cmd.ExecuteReader();
+                while (QueryResult.Read())
+                {
+                    userResponse.First_Name = QueryResult["First_Name"].ToString();
+                    userResponse.Last_Name = QueryResult["Last_Name"].ToString();
+                    userResponse.Email = QueryResult["Email"].ToString();
+                    userResponse.Phone_Number = Convert.ToInt32(QueryResult["Phone_Number"]);
+                    userResponse.DateOfBirth = DateTime.Parse(QueryResult["DateOfBirth"].ToString());
+                    userResponse.Gender = QueryResult["Gender"].ToString();
+                    userResponse.Age = Convert.ToInt32(QueryResult["Age"]);
+                    userResponse.JoinedDate = DateTime.Parse(QueryResult["JoinedDate"].ToString());
+
+                }
+                conn.Close();
                 return userResponse;
 
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+                return null;
             }
             return null;
+        }
+
+        public List<string> GetTime(BookingTimeRequestModel value)
+        {
+            List<string> timelst = new List<string>();
+            string User_Query = "Select * from timetable;";
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = new MySqlCommand(User_Query, conn);
+            try
+            {
+                conn.Open();
+                MySqlDataReader QueryResult = cmd.ExecuteReader();
+                while (QueryResult.Read())
+                {
+
+                    timelst.Add(QueryResult["Time"].ToString());
+
+                }
+                timelst = checkTime(timelst, value.Date);
+                conn.Close();
+                return timelst;
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+                return null;
+            }
 
         }
 
+        public List<string> checkTime(List<string> lst, string date)
+        {
+            List<string> checklst = new List<string>();
+            List<string> finallst = new List<string>();
+
+            string User_Query = "Select Time from courtbooking where Booked_for='" + date + "'";
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = new MySqlCommand(User_Query, conn);
+            try
+            {
+                conn.Open();
+                MySqlDataReader QueryResult = cmd.ExecuteReader();
+                while (QueryResult.Read())
+                {
+
+                    checklst.Add(QueryResult["Time"].ToString());
+
+                }
+                if (checklst.Count != 0)
+                {
+                    for (int i = 0; i < lst.Count; i++)
+                    {
+                        finallst.Add(lst[i]);
+                        for (int j = 0; j < checklst.Count; j++)
+                        {
+
+
+
+                            if (lst[i] == checklst[j])
+                            {
+                                //string time = lst[i];
+                                finallst.Remove(lst[i]);
+                                // break;
+                            }
+                        }
+                    }
+                    conn.Close();
+                    return finallst;
+                }
+                else
+                {
+                    return lst;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+                return null;
+            }
+        }
+
+        public bool Booking(CourtBookingRequestModel response)
+        {
+
+            bool booked;
+
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Insert into courtbooking(User_Id,Booked_date,Booked_for,Time) values (" + WebApiApplication.User_Id + ",'" + bookedDate + "','" + response.date + "','" + response.time + "')";
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                booked = true;
+                conn.Close();
+                return booked;
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                booked = false;
+                return booked;
+            }
+
+        }
+
+        public List<string> GetVenue()
+        {
+            List<string> venuelst = new List<string>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "select DISTINCT(Venue) from trainingdetails";
+            try
+            {
+                conn.Open();
+                MySqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    venuelst.Add(dr["Venue"].ToString());
+                }
+                conn.Close();
+                return venuelst;
+
+
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return null;
+            }
+
+        }
+
+        public List<string> ShowTime(string venue)
+        {
+            List<string> timelst = new List<string>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "Select Time from trainingdetails where Venue='" + venue + "'";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    timelst.Add(reader["Time"].ToString());
+
+                }
+                conn.Close();
+                return timelst;
+
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return null;
+            }
+
+        }
+
+        public bool BookCourt(TrainingBookingRequestModel value)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "Inser into trainingbooking (Booked_Date,Booked_For,Time) values('" + bookedDate + "','" + value.JoiningDate + "','" + value.Time + "') ";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return false;
+            }
+        }
     }
 }
+

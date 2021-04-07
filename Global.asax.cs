@@ -13,8 +13,10 @@ namespace WebAPI
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
+        public static int User_Id;
         protected void Application_Start()
         {
+            
             DatabaseConnectionModel.Server = System.Configuration.ConfigurationManager.AppSettings["Server"];
             DatabaseConnectionModel.Database = System.Configuration.ConfigurationManager.AppSettings["Database"];
             DatabaseConnectionModel.Username = System.Configuration.ConfigurationManager.AppSettings["Username"];
