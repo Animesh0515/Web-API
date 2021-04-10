@@ -207,7 +207,9 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\CourtBookingController.cs" />
+    <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\TraininBookingController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -215,9 +217,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\BookingTimeRequestModel.cs" />
+    <Compile Include="Models\CalendarDataRequestModel.cs" />
+    <Compile Include="Models\CalendarDataResponseModel.cs" />
     <Compile Include="Models\CourtBookingRequestModel.cs" />
     <Compile Include="Models\LoginRequestModel.cs" />
     <Compile Include="Models\ResponseModel.cs" />
+    <Compile Include="Models\TrainingBookingRequestModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\DatabaseConnectionModel.cs" />
     <Compile Include="Models\UserResponseModel.cs" />
@@ -277,6 +282,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Gallery\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

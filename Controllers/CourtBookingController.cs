@@ -14,7 +14,8 @@ namespace WebAPI.Controllers
     public class CourtBookingController : ApiController
     {
         Utility utility = new Utility();
-        // GET api/CourtBookingController/
+        
+
         [Route("api/CourtBooking/GetTimeList")]
         [HttpPost]
         public List<string>  GetTimeList([FromBody] BookingTimeRequestModel value)
@@ -38,7 +39,7 @@ namespace WebAPI.Controllers
         [HttpPost]
         public string BookCourt([FromBody] CourtBookingRequestModel response)
         {
-            CourtBookingResponse bookingResponse = new CourtBookingResponse();
+            BookingResponse bookingResponse = new BookingResponse();
             bookingResponse.booked = utility.Booking(response);
             return JsonConvert.SerializeObject(bookingResponse);
 

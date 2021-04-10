@@ -261,7 +261,7 @@ namespace WebAPI
         {
             List<string> timelst = new List<string>();
             MySqlConnection conn = new MySqlConnection(connectionstring);
-            string query = "Select Time from trainingdetails where Venue='" + venue + "'";
+            string query = "Select Distinct(Time) from trainingdetails where Venue='" + venue + "'";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             try
@@ -301,6 +301,79 @@ namespace WebAPI
             {
                 Console.Write(e);
                 return false;
+            }
+        }
+        public List<CalendarDataResponseModel> GetData(int weekday)
+        {
+            List<CalendarDataResponseModel> calendarDatalst = new List<CalendarDataResponseModel>();
+            string day = "";
+            switch (weekday)
+            {
+                case 1:
+                    day = "Monday";
+                    break;
+                case 2:
+                    day = "Tuesday";
+                    break;
+                case 3:
+                    day = "Wednesday";
+                    break;
+                case 4:
+                    day = "Thursday";
+                    break;
+                case 5:
+                    day = "Friday";
+                    break;
+                case 6:
+                    day = "Saturday";
+                    break;
+                case 7:
+                    day = "Sunday";
+                    break;
+            }
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "Select Time,Venue from trainingdetails where day='" + day + "'";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    CalendarDataResponseModel calendarData = new CalendarDataResponseModel();
+                    calendarData.time = reader["Time"].ToString();
+                    calendarData.Venue = reader["Venue"].ToString();
+                    calendarDatalst.Add(calendarData);
+                }
+                return calendarDatalst;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        public List<string> GetPhotos()
+        {
+            List<string> photos = new List<string>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select Media_Url from gallery where Media_Type='Image'";
+            try
+            {
+                conn.Open();
+                MySqlDataReader data = cmd.ExecuteReader();
+                while (data.Read())
+                {
+                    photos.Add(data["Media_Url"].ToString());
+                }
+                return photos;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
             }
         }
     }
