@@ -62,7 +62,7 @@ namespace WebAPI
                 int count = int.Parse(output.ToString());
                 if (count == 0)
                 {
-                    string userdetailquery = "Insert into users (`Role`, `First_Name`, `Last_Name`, `Email`, `Phone_Number`, `DateOfBirth`, `Password`, `Gender`, `Age`, `JoinedDate`, `Username`)  values('User','" + users.First_Name + "','" + users.Last_Name + "','" + users.Email + "','" + users.Phone_Number + "','" + String.Format("{0:yyyy/MM/dd}", users.DateOfBirth) + "','" + users.Password + "','" + users.Gender + "','" + users.Age + "','" + String.Format("{0:yyyy/MM/dd}", users.JoinedDate) + "','" + users.Username + "');";
+                    string userdetailquery = "Insert into users (`Role`, `First_Name`, `Last_Name`, `Email`, `Phone_Number`, `DateOfBirth`, `Password`, `Gender`, `Age`, `JoinedDate`, `Username`)  values('User','" + users.First_Name + "','" + users.Last_Name + "','" + users.Email + "','" + users.Phone_Number + "','" + String.Format("{0:yyyy-MM-dd}", users.DateOfBirth) + "','" + users.Password + "','" + users.Gender + "','" + users.Age + "','" + String.Format("{0:yyyy/MM/dd}", users.JoinedDate) + "','" + users.Username + "');";
                     MySqlCommand Insertcmd = new MySqlCommand(userdetailquery, conn);
                     Insertcmd.ExecuteNonQuery();
                     Status = 1;
@@ -87,9 +87,9 @@ namespace WebAPI
             }
         }
 
-        public UserResponseModel GetUserDetails(int Id)
+        public UserProfileModel GetUserDetails(int Id)
         {
-            UserResponseModel userResponse = new UserResponseModel();
+            UserProfileModel userResponse = new UserProfileModel();
             string User_Query = "Select * from users where User_Id='" + Id + "';";
             MySqlConnection conn = new MySqlConnection(connectionstring);
             MySqlCommand cmd = new MySqlCommand(User_Query, conn);
@@ -105,10 +105,11 @@ namespace WebAPI
                     userResponse.Last_Name = QueryResult["Last_Name"].ToString();
                     userResponse.Email = QueryResult["Email"].ToString();
                     userResponse.Phone_Number = Convert.ToInt32(QueryResult["Phone_Number"]);
+                    userResponse.Address = QueryResult["Address"].ToString();
                     userResponse.DateOfBirth = DateTime.Parse(QueryResult["DateOfBirth"].ToString());
                     userResponse.Gender = QueryResult["Gender"].ToString();
                     userResponse.Age = Convert.ToInt32(QueryResult["Age"]);
-                    userResponse.JoinedDate = DateTime.Parse(QueryResult["JoinedDate"].ToString());
+                    userResponse.ImageUrl = QueryResult["ImageUrl"].ToString();
 
                 }
                 conn.Close();
@@ -374,6 +375,42 @@ namespace WebAPI
             {
                 Console.WriteLine(ex);
                 return null;
+            }
+        }
+
+        public bool UpdateImage(string ImageUrl)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "UPDATE  users set ImageUrl='"+ ImageUrl + "' WHERE User_Id="+ WebApiApplication.User_Id+"";
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public bool UpdateUserDetails(UserProfileModel userdetails)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            string query = "UPDATE users SET First_Name='" + userdetails.First_Name + "', Last_Name='" + userdetails.Last_Name + "', Email='" + userdetails.Email + "',Phone_Number='" + userdetails.Phone_Number + "',DateOfBirth='" + String.Format("{0:yyyy-MM-dd}", userdetails.DateOfBirth )+ "',Gender='" + userdetails.Gender + "',Age='" + userdetails.Age + "',Address='" + userdetails.Address + "' where User_Id=" + WebApiApplication.User_Id + "; ";
+            MySqlCommand cmd = new MySqlCommand(query, conn);
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
             }
         }
     }

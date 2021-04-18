@@ -22,6 +22,11 @@ namespace WebAPI.Models
             public bool booked { get; set; }
         }
 
+        public class ProfileUpdateResponse
+        {
+            public  bool updated { get; set; }
+        }
+
         
     }
 }

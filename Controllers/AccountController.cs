@@ -97,21 +97,7 @@ namespace WebAPI.Controllers
             }
         }
 
-        [Route("api/Account/GetUserDetails")]
-        [HttpGet]
-        public string GetUserDetails()
-        {
-            UserResponseModel userResponse=utility.GetUserDetails(WebApiApplication.User_Id);
-            if(userResponse != null)
-            {
-                return JsonConvert.SerializeObject(userResponse);
-            }
-            else
-            {
-                return JsonConvert.SerializeObject(null);
-            }
-
-        }
+        
         
 
     }
