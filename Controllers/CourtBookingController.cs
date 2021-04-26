@@ -45,5 +45,22 @@ namespace WebAPI.Controllers
 
 
         }
+        [Route("api/CourtBooking/GetStatus")]
+        [HttpGet]
+        public string GetStatus()
+        {
+            CourtBookingStatusResponse statusResponse = new CourtBookingStatusResponse();
+            statusResponse.Status  = utility.getStatus();
+            return JsonConvert.SerializeObject(statusResponse);
+        }
+
+        [Route("api/CourtBooking/GetBookings")]
+        [HttpGet]
+        public string GetBookings()
+        {
+            List<MyBookingsModel> myBookingslst = new List<MyBookingsModel>();
+            myBookingslst = utility.getBookings();
+            return JsonConvert.SerializeObject(myBookingslst);
+        }
     }
 }

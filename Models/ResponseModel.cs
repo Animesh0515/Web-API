@@ -18,15 +18,18 @@ namespace WebAPI.Models
         }
 
         public class BookingResponse
-            {
+        {
             public bool booked { get; set; }
         }
 
         public class ProfileUpdateResponse
         {
-            public  bool updated { get; set; }
+            public bool updated { get; set; }
         }
 
-        
+        public class CourtBookingStatusResponse
+        {
+            public string Status { get; set; }
+        }
     }
 }

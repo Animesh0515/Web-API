@@ -211,6 +211,7 @@
     <Compile Include="Controllers\CourtBookingController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\TraininBookingController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
@@ -222,6 +223,8 @@
     <Compile Include="Models\CalendarDataResponseModel.cs" />
     <Compile Include="Models\CourtBookingRequestModel.cs" />
     <Compile Include="Models\LoginRequestModel.cs" />
+    <Compile Include="Models\MyBookingsModel.cs" />
+    <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\ResponseModel.cs" />
     <Compile Include="Models\TrainingBookingRequestModel.cs" />
     <Compile Include="Models\UserModel.cs" />
@@ -284,6 +287,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Gallery\" />
+    <Folder Include="Views\Notification\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

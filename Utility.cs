@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using WebAPI.Models;
 
 namespace WebAPI
@@ -382,7 +383,7 @@ namespace WebAPI
         {
             MySqlConnection conn = new MySqlConnection(connectionstring);
             MySqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = "UPDATE  users set ImageUrl='"+ ImageUrl + "' WHERE User_Id="+ WebApiApplication.User_Id+"";
+            cmd.CommandText = "UPDATE  users set ImageUrl='" + ImageUrl + "' WHERE User_Id=" + WebApiApplication.User_Id + "";
             try
             {
                 conn.Open();
@@ -399,7 +400,7 @@ namespace WebAPI
         public bool UpdateUserDetails(UserProfileModel userdetails)
         {
             MySqlConnection conn = new MySqlConnection(connectionstring);
-            string query = "UPDATE users SET First_Name='" + userdetails.First_Name + "', Last_Name='" + userdetails.Last_Name + "', Email='" + userdetails.Email + "',Phone_Number='" + userdetails.Phone_Number + "',DateOfBirth='" + String.Format("{0:yyyy-MM-dd}", userdetails.DateOfBirth )+ "',Gender='" + userdetails.Gender + "',Age='" + userdetails.Age + "',Address='" + userdetails.Address + "' where User_Id=" + WebApiApplication.User_Id + "; ";
+            string query = "UPDATE users SET First_Name='" + userdetails.First_Name + "', Last_Name='" + userdetails.Last_Name + "', Email='" + userdetails.Email + "',Phone_Number='" + userdetails.Phone_Number + "',DateOfBirth='" + String.Format("{0:yyyy-MM-dd}", userdetails.DateOfBirth) + "',Gender='" + userdetails.Gender + "',Age='" + userdetails.Age + "',Address='" + userdetails.Address + "' where User_Id=" + WebApiApplication.User_Id + "; ";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             try
             {
@@ -407,10 +408,115 @@ namespace WebAPI
                 cmd.ExecuteNonQuery();
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
                 return false;
+            }
+        }
+
+        public string getStatus()
+        {
+
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select * from mobilebookingfeature";
+            try
+            {
+                conn.Open();
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                if (rdr.Read())
+                {
+                    return rdr["Status"].ToString();
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+            return null;
+        }
+
+        public List<MyBookingsModel> getBookings()
+        {
+            List<MyBookingsModel> bookingslst = new List<MyBookingsModel>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select * from courtbooking where User_Id=" + WebApiApplication.User_Id + " order by Booked_Date desc";
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+
+                {
+                    MyBookingsModel myBookings = new MyBookingsModel();
+                    myBookings.BookingType = "Court";
+                    myBookings.BookedFor = reader["Booked_for"].ToString();
+                    myBookings.BookedDate = reader["Booked_Date"].ToString();
+                    myBookings.Time = reader["Time"].ToString();
+                    bookingslst.Add(myBookings);
+
+
+                }
+                conn.Close();
+                string query = "SELECT * from trainingbooking tb LEFT join trainingbookingvenue tbv on tb.Training_Booking_Id=tbv.training_booking_id where tbv.User_Id=" + WebApiApplication.User_Id + ";";
+                conn.Open();
+
+                MySqlCommand selectcmd = new MySqlCommand(query, conn);
+                MySqlDataReader rdr = selectcmd.ExecuteReader();
+
+                while (rdr.Read())
+                {
+                    MyBookingsModel myBookings = new MyBookingsModel();
+                    myBookings.BookingType = "Training";
+                    myBookings.BookedFor = String.Format("{0:yyyy-MM-dd}", rdr["Booked_for"]);
+                    myBookings.BookedDate = String.Format("{0:yyyy-MM-dd}", rdr["Booked_Date"]);
+                    myBookings.Time = rdr["Time"].ToString();
+                    myBookings.Venue = rdr["Venue"].ToString();
+                    bookingslst.Add(myBookings);
+
+                }
+                conn.Close();
+                var ascendingOrder = bookingslst.OrderBy(i => i.BookedDate);
+                return ascendingOrder.ToList();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
+            }
+
+        }
+
+        public List<NotificationModel> getNotification()
+        {
+
+            List<NotificationModel> notificationslst = new List<NotificationModel>();
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select * from usernotification";
+            try
+            {
+                conn.Open();
+                MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+
+                {
+                    NotificationModel notification = new NotificationModel();
+                    notification.Notification = reader["notification"].ToString();
+                    notificationslst.Add(notification);
+                }
+                return notificationslst;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return null;
             }
         }
     }
