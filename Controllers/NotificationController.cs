@@ -8,6 +8,7 @@ using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class NotificationController : ApiController
     {
         Utility utility = new Utility();

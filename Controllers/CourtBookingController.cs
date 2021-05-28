@@ -11,6 +11,7 @@ using static WebAPI.Models.ResponseModel;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class CourtBookingController : ApiController
     {
         Utility utility = new Utility();

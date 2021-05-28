@@ -7,6 +7,7 @@ using WebAPI.Models;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class CalendarController: ApiController
     {
         Utility utility = new Utility();

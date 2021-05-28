@@ -8,6 +8,7 @@ using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class GalleryController : ApiController
     {
         Utility utility = new Utility();

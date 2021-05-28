@@ -10,6 +10,7 @@ using static WebAPI.Models.ResponseModel;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class ProfileController : ApiController
     {
         Utility utility = new Utility();

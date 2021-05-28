@@ -42,7 +42,11 @@ namespace WebAPI.Controllers
                     //bool Result = validatedLogin.validate;
                     //return Request.CreateResponse(HttpStatusCode.OK, validatedLogin.validate);
                     //return result;
-                    return JsonConvert.SerializeObject(validatedLogin);
+                    return JsonConvert.SerializeObject(new ValidatedLogin
+                    {
+                        validate = true,
+                        token=TokenGenerator.GenerateToken(value.Username)
+                    }) ;
                     // result = result.Trim();
 
 
@@ -70,6 +74,7 @@ namespace WebAPI.Controllers
                 //return false;
             }
         }
+
         [Route("api/Account/Signup")]
         [HttpPost]
         public string Signup([FromBody] UserModel value)

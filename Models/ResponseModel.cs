@@ -10,6 +10,7 @@ namespace WebAPI.Models
         public class ValidatedLogin
         {
             public bool validate { get; set; }
+            public string token { get; set; }
         }
 
         public class ValidateSignup

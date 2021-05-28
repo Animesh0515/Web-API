@@ -7,6 +7,7 @@ using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
+    [AuthenticationFilter]
     public class TraininBookingController : ApiController
     {
         Utility utility = new Utility();
