@@ -246,6 +246,7 @@
     <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\ResponseModel.cs" />
     <Compile Include="Models\TrainingBookingRequestModel.cs" />
+    <Compile Include="Models\TrainingBookingResponseModel.cs" />
     <Compile Include="Models\UserModel.cs" />
     <Compile Include="Models\DatabaseConnectionModel.cs" />
     <Compile Include="Models\UserProfileModel.cs" />

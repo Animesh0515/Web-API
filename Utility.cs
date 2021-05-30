@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using WebAPI.Models;
+using static WebAPI.Models.ResponseModel;
 
 namespace WebAPI
 {
@@ -15,6 +16,7 @@ namespace WebAPI
 
         public List<LoginRequestModel> login()
         {
+
             DataTable dt = new DataTable();
             List<LoginRequestModel> loginRequestlst = new List<LoginRequestModel>();
             MySqlConnection conn = new MySqlConnection(connectionstring);
@@ -63,7 +65,7 @@ namespace WebAPI
                 int count = int.Parse(output.ToString());
                 if (count == 0)
                 {
-                    string userdetailquery = "Insert into users (`Role`, `First_Name`, `Last_Name`, `Email`, `Phone_Number`, `DateOfBirth`, `Password`, `Gender`, `Age`, `JoinedDate`, `Username`)  values('User','" + users.First_Name + "','" + users.Last_Name + "','" + users.Email + "','" + users.Phone_Number + "','" + String.Format("{0:yyyy-MM-dd}", users.DateOfBirth) + "','" + users.Password + "','" + users.Gender + "','" + users.Age + "','" + String.Format("{0:yyyy/MM/dd}", users.JoinedDate) + "','" + users.Username + "');";
+                    string userdetailquery = "Insert into users (`Role`, `First_Name`, `Last_Name`, `Email`, `Phone_Number`, `Address`, `DateOfBirth`, `Password`, `Gender`, `Age`, `JoinedDate`, `Username`, `Flag`)  values('User','" + users.First_Name + "','" + users.Last_Name + "','" + users.Email + "','" + users.Phone_Number + "','" + users.Address + "', '" + String.Format("{0:yyyy-MM-dd}", users.DateOfBirth) + "','" + Base64Encode(users.Password) + "','" + users.Gender + "','" + users.Age + "','" + String.Format("{0:yyyy/MM/dd}", users.JoinedDate) + "','" + users.Username + "','A');";
                     MySqlCommand Insertcmd = new MySqlCommand(userdetailquery, conn);
                     Insertcmd.ExecuteNonQuery();
                     Status = 1;
@@ -86,6 +88,48 @@ namespace WebAPI
                 return Status;
 
             }
+        }
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public UserData GetUserData(int Id)
+        {
+            UserData usrdata = null;
+            string User_Query = "Select First_Name, Last_Name, ImageUrl from users where User_Id='" + Id + "';";
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = new MySqlCommand(User_Query, conn);
+            //MySqlCommand User_Query = conn.CreateCommand();
+            //User_Query.CommandText = "Select * from users where User_Id='" + Id + "';";
+            try
+            {
+                conn.Open();
+                MySqlDataReader QueryResult = cmd.ExecuteReader();
+                while (QueryResult.Read())
+                {
+                    usrdata = new UserData
+                    {
+                        First_Name = QueryResult["First_Name"].ToString(),
+                        Last_Name = QueryResult["Last_Name"].ToString(),
+                        ImageUrl = QueryResult["ImageUrl"].ToString()
+                    };
+
+
+                }
+                conn.Close();
+                return usrdata;
+
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex);
+                return null;
+            }
+            return null;
         }
 
         public UserProfileModel GetUserDetails(int Id)
@@ -237,7 +281,7 @@ namespace WebAPI
             List<string> venuelst = new List<string>();
             MySqlConnection conn = new MySqlConnection(connectionstring);
             MySqlCommand cmd = conn.CreateCommand();
-            cmd.CommandText = "select DISTINCT(Venue) from trainingdetails";
+            cmd.CommandText = "select DISTINCT(Venue) from calendar";
             try
             {
                 conn.Open();
@@ -263,7 +307,7 @@ namespace WebAPI
         {
             List<string> timelst = new List<string>();
             MySqlConnection conn = new MySqlConnection(connectionstring);
-            string query = "Select Distinct(Time) from trainingdetails where Venue='" + venue + "'";
+            string query = "Select Distinct(Time) from calendar where Venue='" + venue + "'";
             MySqlCommand cmd = new MySqlCommand(query, conn);
 
             try
@@ -334,7 +378,7 @@ namespace WebAPI
                     break;
             }
             MySqlConnection conn = new MySqlConnection(connectionstring);
-            string query = "Select Time,Venue from trainingdetails where day='" + day + "'";
+            string query = "Select Time,Venue from calendar where day='" + day + "'";
             MySqlCommand cmd = new MySqlCommand(query, conn);
             try
             {
@@ -519,6 +563,90 @@ namespace WebAPI
                 return null;
             }
         }
+
+        public bool BookTraining(TrainingBookingResponseModel training)
+        {
+
+            string bookedDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Insert into trainingbooking (Booked_Date, Booked_for, Time) values('" + bookedDate + "','" + training.JoiningDate + "','" + training.Time + "')";
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                conn.Close();
+                int TrainingId = GettrainingID(bookedDate);
+                if (TrainingId != 0)
+                {
+                    string query = "Insert into trainingbookingvenue (training_booking_id, User_Id, Venue) values('" + TrainingId + "','" + WebApiApplication.User_Id + "','" + training.Venue + "')";
+                    MySqlCommand selectcmd = new MySqlCommand(query, conn);
+                    try
+                    {
+                        conn.Open();
+                        selectcmd.ExecuteNonQuery();
+                        return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
+        public int GettrainingID(string date)
+        {
+            int Id = 0;
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Select Training_booking_id from trainingbooking where Booked_Date='" + date + "'";
+            try
+            {
+                conn.Open();
+                MySqlDataReader rdr = cmd.ExecuteReader();
+                while (rdr.Read())
+                {
+                    Id = int.Parse(rdr["Training_booking_id"].ToString());
+                }
+                return Id;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Id;
+            }
+        }
+
+        public bool ChangeCredential(UserCredentail credentail)
+        {
+            MySqlConnection conn = new MySqlConnection(connectionstring);
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "Update users set Username='" + credentail.Username + "', Password='" + Base64Encode(credentail.Password) + "' where User_Id='" + WebApiApplication.User_Id + "'";
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false; ;
+            }
+        }
     }
 }
+
 

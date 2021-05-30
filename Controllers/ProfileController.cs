@@ -15,6 +15,21 @@ namespace WebAPI.Controllers
     {
         Utility utility = new Utility();
 
+        [Route("api/Profile/GetUserData")]
+        [HttpGet]
+        public string GetUserData()
+        {
+            UserData userResponse = utility.GetUserData(WebApiApplication.User_Id);
+            if (userResponse != null)
+            {
+                return JsonConvert.SerializeObject(userResponse);
+            }
+            else
+            {
+                return JsonConvert.SerializeObject(null);
+            }
+
+        }
 
         [Route("api/Profile/UpdateImage")]
         [HttpPost]

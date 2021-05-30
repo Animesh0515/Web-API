@@ -32,5 +32,10 @@ namespace WebAPI.Models
         {
             public string Status { get; set; }
         }
+
+        public class ChangeCredentialResponse
+        {
+            public bool  changed { get; set; }
+        }
     }
 }

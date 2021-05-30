@@ -5,6 +5,12 @@ using System.Web;
 
 namespace WebAPI.Models
 {
+    public class UserData{
+        public string First_Name { get; set; }
+        public string Last_Name { get; set; }
+        public string ImageUrl { get; set; }
+
+    }
     public class UserProfileModel
     {
         public string First_Name { get; set; }
@@ -18,4 +24,5 @@ namespace WebAPI.Models
         public string ImageUrl { get; set; }
         
     }
+    
 }

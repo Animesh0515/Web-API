@@ -29,11 +29,12 @@ namespace WebAPI.Controllers
             validatedLogin.validate = false;
             //bool Validate = true;
             //DataTable dt = new DataTable();
+            
             List<LoginRequestModel> loginrequestlst = utility.login();
             if (loginrequestlst != null)
             {
                 if (value != null)
-                    loginRequest = loginrequestlst.Where(x => x.Username == value.Username && x.Password == value.Password).FirstOrDefault();
+                    loginRequest = loginrequestlst.Where(x => x.Username == value.Username && x.Password == Base64Encode(value.Password)).FirstOrDefault();
 
                 if (loginRequest != null)
                 {
@@ -102,8 +103,28 @@ namespace WebAPI.Controllers
             }
         }
 
-        
-        
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+
+        [AuthenticationFilter]
+        [Route("api/Account/ChangeCredentail")]
+        [HttpPost]
+        public string ChangeCredentail(UserCredentail credentail)
+        {
+            ChangeCredentialResponse response = new ChangeCredentialResponse();
+            response.changed = utility.ChangeCredential(credentail);
+            return JsonConvert.SerializeObject(response);
+        }
 
     }
 }
